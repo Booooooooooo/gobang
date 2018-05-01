@@ -193,7 +193,7 @@ void MainWindow::paintEvent(QPaintEvent *)
                 //MainWindow w;
                 if(wel.exec() == QDialog::Accepted){
                     if(roll.exec() == QDialog::Accepted){
-                        restart(roll.getFirst());
+                        restart(roll.getFirst(), roll.getType());
                         this->show();
                     }
                 }
@@ -211,7 +211,7 @@ void MainWindow::paintEvent(QPaintEvent *)
             MainWindow w;
             if(wel.exec() == QDialog::Accepted){
                 if(roll.exec() == QDialog::Accepted){
-                    restart(roll.getFirst());
+                    restart(roll.getFirst(), roll.getType());
                     this->show();
                 }
             }
@@ -219,9 +219,10 @@ void MainWindow::paintEvent(QPaintEvent *)
     }
 }
 
-void MainWindow::restart(int first)
+void MainWindow::restart(int first, int t)
 {
     this->setFirstPlayer(first);
+    setGameType(type);
     turn = 1;
     clickPosCol = -1;
     clickPosRow = -1;
@@ -243,10 +244,22 @@ void MainWindow::initGame()
 void MainWindow::init()
 {
     game->gameStatus = PLAYING;
+    game->gameType = type;
     game->startGame(firstPlayer);
+    if(firstPlayer == 2 && type == 1){
+        qsrand(QDateTime::currentDateTime().toTime_t());
+        clickPosCol = qrand() % boardSize;
+        clickPosRow = qrand() % boardSize;
+        game->gameMap[clickPosRow][clickPosCol] = 0;
+        game->actionByAI(clickPosRow, clickPosCol);
+        game->gameMap[clickPosRow][clickPosCol] = -1;
+    }
     update();
     if(game->player1.getTurn() == turn){
-        ui->playerLabel->setText(tr("玩家一落子"));
+        if(type == 0)
+            ui->playerLabel->setText(tr("玩家一落子"));
+        else
+            ui->playerLabel->setText(tr("玩家落子"));
     }
     else{
         ui->playerLabel->setText(tr("玩家二落子"));
@@ -304,7 +317,10 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         //qDebug() << game->player1.getTurn();
         //qDebug() << game->player2.getTurn();
         if(turn == game->player1.getTurn()){
-            ui->playerLabel->setText(tr("玩家一落子"));
+            if(type == 0)
+                ui->playerLabel->setText(tr("玩家一落子"));
+            else
+                ui->playerLabel->setText(tr("玩家落子"));
         }
         else{
             ui->playerLabel->setText(tr("玩家二落子"));
@@ -319,6 +335,19 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     update();
 }
 
+void MainWindow::mouseReleaseEvent(QMouseEvent *)
+{
+    if(type == 1){
+        //qDebug()<<clickPosRow;
+        //qDebug()<<clickPosCol;
+        turn = !turn;
+        game->actionByAI(clickPosRow, clickPosCol);
+        QSound::play("../gobang/sound/play.wav");
+        update();
+        startTimer();
+    }
+}
+
 
 void MainWindow::on_actionNew_triggered()
 {
@@ -327,10 +356,10 @@ void MainWindow::on_actionNew_triggered()
     rollDice roll;
     //MainWindow w;
     if(wel.exec() == QDialog::Accepted){
-        if(roll.exec() == QDialog::Accepted){
-            restart(roll.getFirst());
+        //if(roll.exec() == QDialog::Accepted){
+            restart(roll.getFirst(), roll.getType());
             this->show();
-        }
+        //}
     }
 }
 
@@ -341,5 +370,5 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::StandardButton btnValue = QMessageBox::information(this, "关于", "计科1605 王烟波 1030416505\n 于2018.05制作");
+    QMessageBox::information(this, "关于", "计科1605 王烟波 1030416505\n 于2018.05制作");
 }

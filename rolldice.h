@@ -22,6 +22,7 @@ public:
     ~rollDice();
     int getFirst();
     void setType(int type);
+    int getType();
 
 private:
     Ui::rollDice *ui;

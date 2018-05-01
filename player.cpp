@@ -10,12 +10,12 @@ Player::~Player()
 
 }
 
-void Player::setTurn(bool turn)
+void Player::setTurn(int turn)
 {
     turnFlag = turn;
 }
 
-bool Player::getTurn()
+int Player::getTurn()
 {
     return turnFlag;
 }

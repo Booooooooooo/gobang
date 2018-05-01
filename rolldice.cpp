@@ -59,6 +59,11 @@ int rollDice::getFirst()
     return firstPlayer;
 }
 
+int rollDice::getType()
+{
+    return type;
+}
+
 void rollDice::roll()
 {
     if(!rollingFlag){

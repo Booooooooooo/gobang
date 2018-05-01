@@ -25,16 +25,16 @@ bool Game::startGame(int firstPlayer)
 
     playerFlag = firstPlayer % 2;
     if(player1.getID() == firstPlayer){
-        player1.setTurn(true);
-        player2.setTurn(false);
-        player1.setColor(true);
-        player2.setColor(false);
+        player1.setTurn(0);
+        player2.setTurn(1);
+        player1.setColor(0);
+        player2.setColor(1);
     }
     else{
-        player2.setTurn(true);
-        player2.setColor(true);
-        player1.setTurn(false);
-        player1.setColor(false);
+        player2.setTurn(0);
+        player2.setColor(0);
+        player1.setTurn(1);
+        player1.setColor(1);
     }
 
     if(gameType == 1){

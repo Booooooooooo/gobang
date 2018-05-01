@@ -24,7 +24,7 @@ public:
 protected:
     void paintEvent(QPaintEvent *);
     void mousePressEvent(QMouseEvent *event);
-    void mouseResleaseEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 private:
     Game *game;
     int type;
@@ -33,9 +33,9 @@ private:
     int clickPosRow, clickPosCol;
     void initGame();
     void checkGame(int y, int x);
-    bool turn;//0为黑子走，1为白子走
+    int turn;//0为黑子走，1为白子走
     int firstPlayer;
-    void restart(int first);
+    void restart(int first, int t);
     QTimer* down;
     QTimer* clear;
     QTimer* count;
