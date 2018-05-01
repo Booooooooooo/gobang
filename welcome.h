@@ -15,9 +15,11 @@ class welcome : public QDialog
 public:
     explicit welcome(QWidget *parent = 0);
     ~welcome();
+    int type;//0为双人，1为人机
 
 private slots:
-    //void accept();
+    void person();
+    void computer();
 
 private:
     Ui::welcome *ui;

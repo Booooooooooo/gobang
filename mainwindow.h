@@ -20,12 +20,14 @@ public:
     ~MainWindow();
     void setFirstPlayer(int first);
     void startTimer();
+    void setGameType(int type);
 protected:
     void paintEvent(QPaintEvent *);
     void mousePressEvent(QMouseEvent *event);
     void mouseResleaseEvent(QMouseEvent *event);
 private:
     Game *game;
+    int type;
     Ui::MainWindow *ui;
     int time;//计时数字
     int clickPosRow, clickPosCol;
@@ -43,6 +45,9 @@ private slots:
     void updateLabel();
     //void chessOne();
     void init();
+    void on_actionNew_triggered();
+    void on_actionExit_triggered();
+    void on_actionAbout_triggered();
 };
 
 #endif // MAINWINDOW_H

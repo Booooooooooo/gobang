@@ -21,10 +21,12 @@ public:
     explicit rollDice(QWidget *parent = 0);
     ~rollDice();
     int getFirst();
+    void setType(int type);
 
 private:
     Ui::rollDice *ui;
     bool rollingFlag;
+    int type;
     QString bgfile;
     QMovie *bgMovie;
     QPushButton *rollButton;

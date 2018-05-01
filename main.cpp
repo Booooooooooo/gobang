@@ -11,18 +11,19 @@ int main(int argc, char *argv[])
     welcome wel;
     rollDice rol;
     MainWindow w;
+    int flag = -1;
     if(wel.exec() == QDialog::Accepted){
-        if(rol.exec() == QDialog::Accepted){
+        //if(rol.exec() == QDialog::Accepted){
             w.setFirstPlayer(rol.getFirst());
             w.startTimer();
             w.show();
             return a.exec();
-        }
+        //}
 
     }
-    else if(wel.exec() == QDialog::Rejected){
+    else{
         a.exit();
     }
 
-    else return 0;
+    return 0;
 }

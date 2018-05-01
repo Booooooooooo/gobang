@@ -32,8 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //this->setWindowModality(Qt::ApplicationModal);
-    //this->firstPlayer = firstPlayer;
+    setWindowTitle(tr("五子棋"));
     setIconSize(QSize(menuSize, menuSize));
     this->resize(windowWidth,windowHeight);
     ui->lcdNumber->setParent(this);
@@ -53,6 +52,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(clear, SIGNAL(timeout()), this, SLOT(updateLabel()));
     count = new QTimer(this);
     connect(count, SIGNAL(timeout()), this, SLOT(countTime()));
+}
+
+void MainWindow::setGameType(int type)
+{
+    this->type = type;
+    game->gameType = type;
 }
 
 void MainWindow::startTimer()
@@ -198,7 +203,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 
     if(game->isDeadGame()){
         QSound::play("../gobang/sound/lose.wav");
-        QMessageBox::StandardButton btnValue = QMessageBox::information(this, "oops", "dead game!");
+        QMessageBox::StandardButton btnValue = QMessageBox::information(this, "啊哦", "死局");
         if(btnValue == QMessageBox::Ok){
             this->close();
             welcome wel;
@@ -292,6 +297,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     }
 
     if(game->gameMap[clickPosRow][clickPosCol] == -1){
+        QSound::play("../gobang/sound/play.wav");
         game->gameMap[clickPosRow][clickPosCol] = turn;
         turn = !(turn);
         //qDebug() << turn;
@@ -313,3 +319,27 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     update();
 }
 
+
+void MainWindow::on_actionNew_triggered()
+{
+    this->close();
+    welcome wel;
+    rollDice roll;
+    //MainWindow w;
+    if(wel.exec() == QDialog::Accepted){
+        if(roll.exec() == QDialog::Accepted){
+            restart(roll.getFirst());
+            this->show();
+        }
+    }
+}
+
+void MainWindow::on_actionExit_triggered()
+{
+    this->close();
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    QMessageBox::StandardButton btnValue = QMessageBox::information(this, "关于", "计科1605 王烟波 1030416505\n 于2018.05制作");
+}

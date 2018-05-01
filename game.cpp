@@ -1,4 +1,5 @@
 #include "game.h"
+#include <QTime>
 
 Game::Game()
 {
@@ -34,6 +35,182 @@ bool Game::startGame(int firstPlayer)
         player2.setColor(true);
         player1.setTurn(false);
         player1.setColor(false);
+    }
+
+    if(gameType == 1){
+        scoreMap.clear();
+        for(int i = 0; i < boardSize + 1; i++){
+            vector<int> lineScores;
+            for(int j = 0; j < boardSize; j++){
+                lineScores.push_back(0);
+            }
+            scoreMap.push_back(lineScores);
+        }
+    }
+}
+
+void Game::actionByAI(int &clickRow, int &clickCol)
+{
+    calculateScore();
+
+    int maxScore = 0;
+    vector< pair<int, int> > maxPoints;
+    for(int row = 0; row < boardSize + 1; row++){
+        for(int col = 0; col < boardSize + 1; col++){
+            if(gameMap[row][col] == -1){
+                if(scoreMap[row][col] > maxScore){
+                    maxPoints.clear();
+                    maxScore = scoreMap[row][col];
+                    maxPoints.push_back(make_pair(row, col));
+                }
+                else if(scoreMap[row][col] == maxScore){
+                    maxPoints.push_back(make_pair(row, col));
+                }
+            }
+        }
+    }
+
+    qsrand(QDateTime::currentDateTime().toTime_t());
+    int index = qrand() % maxPoints.size();
+    pair<int, int> pointPair = maxPoints.at(index);
+    clickRow = pointPair.first;
+    clickCol = pointPair.second;
+    gameMap[clickRow][clickCol] = player2.getTurn();
+}
+
+void Game::calculateScore()
+{
+    int personNum = 0;
+    int comNum = 0;
+    int emptyNum = 0;
+
+    scoreMap.clear();
+    for(int i = 0; i < boardSize + 1; i++){
+        vector<int> lineScores;
+        for(int j = 0; j < boardSize + 1; j++){
+            lineScores.push_back(0);
+        }
+        scoreMap.push_back(lineScores);
+    }
+
+    for(int row = 0; row < boardSize + 1; row++){
+        for(int col = 0; col < boardSize + 1; col++){
+            if(row >= 0 && col >= 0 && gameMap[row][col] == -1){
+                for(int y = -1; y <= 1; y++){
+                    for(int x = -1; x <= 1; x++){
+                        personNum = 0;
+                        comNum = 0;
+                        emptyNum = 0;
+
+                        if(!(y == 0 && x == 0)){
+                            for(int i = 1; i <= 4; i++){
+                                if(row + i * y >= 0 && row + i * y <= boardSize
+                                        && col + i * x >= 0 && col + i * x <= boardSize
+                                        && gameMap[row + i * y][col + i * x] == player1.getTurn()){
+                                    personNum++;
+                                }
+                                else if(row + i * y >= 0 && row + i * y <= boardSize
+                                        && col + i * x >= 0 && col + i * x <= boardSize
+                                        && gameMap[row + i * y][col + i * x] == -1){
+                                    emptyNum++;
+                                    break;
+                                }
+                                else{
+                                    break;
+                                }
+                            }
+
+                            for(int i = 1; i <= 4; i++){
+                                if(row - i * y >= 0 && row - i * y <= boardSize
+                                        && col - i * x >= 0 && col - i * x <= boardSize
+                                        && gameMap[row - i * y][col - i * x] == player1.getTurn()){
+                                    personNum++;
+                                }
+                                else if(row - i * y >= 0 && row - i * y <= boardSize
+                                        && col - i * x >= 0 && col - i * x <= boardSize
+                                        && gameMap[row - i * y][col - i * x] == -1){
+                                    emptyNum++;
+                                    break;
+                                }
+                                else{
+                                    break;
+                                }
+                            }
+
+                            if(personNum == 1)
+                                scoreMap[row][col] += 10;
+                            else if(personNum == 2){
+                                if(emptyNum == 1)
+                                    scoreMap[row][col] += 30;
+                                else if(emptyNum == 2)
+                                    scoreMap[row][col] += 40;
+                            }
+                            else if(personNum == 3){
+                                if(emptyNum == 1)
+                                    scoreMap[row][col] += 60;
+                                else if(emptyNum == 2)
+                                    scoreMap[row][col] += 110;
+                            }
+                            else if(personNum == 4)
+                                scoreMap[row][col] += 10100;
+
+                            emptyNum = 0;
+
+                            for(int i = 1; i <= 4; i++){
+                                if(row + i * y >= 0 && row + i * y <= boardSize
+                                        && col + i * x >= 0 && col + i * x <= boardSize
+                                        && gameMap[row + i * y][col + i * x] == player1.getTurn()){
+                                    comNum++;
+                                }
+                                else if(row + i * y >= 0 && row + i * y <= boardSize
+                                        && col + i * x >= 0 && col + i * x <= boardSize
+                                        && gameMap[row + i * y][col + i * x] == -1){
+                                    emptyNum++;
+                                    break;
+                                }
+                                else
+                                    break;
+                            }
+
+                            for(int i = 1; i <= 4; i++){
+                                if(row - i * y >= 0 && row - i * y <= boardSize
+                                        && col - i * x >= 0 && col - i * x <= boardSize
+                                        && gameMap[row - i * y][col - i * x] == player2.getTurn()){
+                                    comNum++;
+                                }
+                                else if(row - i * y >= 0 && row - i * y <= boardSize
+                                        && col - i * x >= 0 && col - i * x <= boardSize
+                                        && gameMap[row - i * y][col - i * x] == -1){
+                                    emptyNum++;
+                                    break;
+                                }
+                                else
+                                    break;
+                            }
+
+                            if(comNum == 0)
+                                scoreMap[row][col] += 5;
+                            else if(comNum == 1)
+                                scoreMap[row][col] += 10;
+                            else if(comNum == 2){
+                                if(emptyNum == 1)
+                                    scoreMap[row][col] += 25;
+                                else if(emptyNum == 2)
+                                    scoreMap[row][col] += 50;
+                            }
+                            else if(comNum == 3){
+                                if(emptyNum == 1)
+                                    scoreMap[row][col] += 55;
+                                else if(emptyNum == 2)
+                                    scoreMap[row][col] += 100;
+                            }
+                            else if(comNum >= 4)
+                                scoreMap[row][col] += 10000;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

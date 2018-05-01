@@ -31,4 +31,7 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     image.qrc \
-    dice.qrc
+    dice.qrc \
+    icon.qrc
+
+DISTFILES +=

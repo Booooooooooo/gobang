@@ -2,14 +2,15 @@
 #include "ui_rolldice.h"
 #include "mainwindow.h"
 #include <QPainter>
+#include <QSound>
+#include <QDebug>
 
 rollDice::rollDice(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::rollDice)
 {
     ui->setupUi(this);
-    //setAttribute(Qt::WA_DeleteOnClose, true);
-    //resize(500,500);
+    setWindowTitle(tr("五子棋"));
     rollingFlag = false;
     k = 0;
 
@@ -43,6 +44,11 @@ rollDice::rollDice(QWidget *parent) :
     layout->addWidget(beginButton);
 }
 
+void rollDice::setType(int type)
+{
+    this->type = type;
+}
+
 rollDice::~rollDice()
 {
     delete ui;
@@ -58,13 +64,26 @@ void rollDice::roll()
     if(!rollingFlag){
         rollingFlag = true;
         rollButton->setText("Stop");
+        QSound::play("../gobang/sound/roll.wav");
         diceLabel->setMovie(bgMovie);
+        qDebug() << type;
         if(k == 0){
             beginButton->setVisible(false);
-            resultLabel->setText(tr("玩家一掷骰子"));
+            if(type == 0){
+                resultLabel->setText(tr("玩家一掷骰子"));
+            }
+            else{
+                resultLabel->setText(tr("玩家掷骰子"));
+            }
+
         }
         else{
-            resultLabel->setText(tr("玩家二掷骰子"));
+            if(type == 0){
+                resultLabel->setText(tr("玩家二掷骰子"));
+            }
+            else{
+                resultLabel->setText(tr("电脑掷骰子"));
+            }
         }
 
         bgMovie->start();
@@ -91,13 +110,25 @@ void rollDice::roll()
             k = temp;
         }
         else if(temp > k){
-            resultLabel->setText(tr("玩家一为后手，玩家二为先手"));
+            if(type == 0){
+                resultLabel->setText(tr("玩家一为后手，玩家二为先手"));
+            }
+            else{
+                resultLabel->setText(tr("玩家为后手，电脑为先手"));
+            }
+
             firstPlayer = 2;
             beginButton->setVisible(true);
             k = 0;
         }
         else if(temp < k){
-            resultLabel->setText(tr("玩家一为先手，玩家二为后手"));
+            if(type == 0){
+                resultLabel->setText(tr("玩家一为先手，玩家二为后手"));
+            }
+            else{
+                resultLabel->setText(tr("玩家为先手，电脑为后手"));
+            }
+
             firstPlayer = 1;
             beginButton->setVisible(true);
             k = 0;

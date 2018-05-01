@@ -8,8 +8,10 @@ welcome::welcome(QWidget *parent) :
     ui(new Ui::welcome)
 {
     ui->setupUi(this);
-    connect(ui->begin, SIGNAL(clicked()), this, SLOT(accept()));
+    setWindowTitle(tr("五子棋"));
+    connect(ui->begin, SIGNAL(clicked()), this, SLOT(person()));
     connect(ui->close, SIGNAL(clicked()), this, SLOT(close()));
+    connect(ui->ai, SIGNAL(clicked()), this, SLOT(computer()));
 }
 
 welcome::~welcome()
@@ -17,10 +19,32 @@ welcome::~welcome()
     delete ui;
 }
 
-/*void welcome::accept()
+void welcome::person()
 {
     rollDice roll;
+    type = 0;
+    roll.setType(type);
     if(roll.exec() == QDialog::Accepted){
         QDialog::accept();
     }
-}*/
+    else{
+        QDialog::reject();
+        close();
+    }
+
+}
+
+void welcome::computer()
+{
+    rollDice roll;
+    type = 1;
+    roll.setType(type);
+    if(roll.exec() == QDialog::Accepted){
+        QDialog::accept();
+    }
+    else{
+        QDialog::reject();
+        close();
+    }
+
+}
