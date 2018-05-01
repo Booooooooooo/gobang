@@ -17,6 +17,7 @@
 const int menuSize = 24;//菜单栏宽度
 const int boardMargin = 30;//棋盘边缘
 const int radius = 15;//棋子半径
+const int smallRadius = 4;//圆心点半径
 const int markSize = 6;//落子标记边长
 const int blockSize = 40;//格子大小
 const double posDelta = sqrt(40 * 40 * 2) / 2;//模糊距离
@@ -44,34 +45,61 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->timeLabel->setGeometry(boardMargin + 10 * blockSize,boardSize * blockSize + boardMargin * 2, windowWidth / 4, displaySize);
     turn = 1;
     initGame();
+}
 
-    QTimer *countDown = new QTimer(this);
-    connect(countDown, SIGNAL(timeout()), this, SLOT(countDown()));
-    countDown->start(30000);
-    time = 1;
-    QString s = QString::number(time++, 10);
-    ui->lcdNumber->display(s);
+void MainWindow::startTimer()
+{
+    down = new QTimer(this);
+    connect(down, SIGNAL(timeout()), this, SLOT(countDown()));
+    down->start(30000);
 
-    QTimer *clear = new QTimer(this);
+
+    clear = new QTimer(this);
     connect(clear, SIGNAL(timeout()), this, SLOT(updateLabel()));
     clear->start(31000);
 
-    QTimer *count = new QTimer(this);
+    count = new QTimer(this);
     connect(count, SIGNAL(timeout()), this, SLOT(countTime()));
     count->start(1000);
+
+    time = 30;
+    QString s = QString::number(time--, 10);
+    ui->lcdNumber->display(s);
 
 }
 
 void MainWindow::countDown()
 {
     ui->timeLabel->setText(tr("超时！"));
-    time = 1;
+    time = 30;
+    //超时随机落子
+    while(1)
+    {
+        qsrand(QDateTime::currentDateTime().toTime_t());
+        int row = qrand() % boardSize + 1;
+        int col = qrand() % boardSize + 1;
+        if(game->gameMap[row][col] == -1){
+            game->gameMap[row][col] = turn;
+            clickPosRow = row;
+            clickPosCol = col;
+            turn = !turn;
+            if(turn == game->player1.getTurn()){
+                ui->playerLabel->setText(tr("玩家一落子"));
+            }
+            else{
+                ui->playerLabel->setText(tr("玩家二落子"));
+            }
+            update();
+            break;
+        }
+    }
+
 }
 
 
 void MainWindow::countTime()
 {
-    QString s = QString::number(time++, 10);
+    QString s = QString::number(time--, 10);
     ui->lcdNumber->display(s);
 }
 
@@ -109,18 +137,25 @@ void MainWindow::paintEvent(QPaintEvent *)
                 brush.setColor(Qt::white);
                 painter.setBrush(brush);
                 painter.drawEllipse(boardMargin + blockSize * j - radius, menuSize + boardMargin + blockSize * i - radius, radius * 2, radius * 2);
+
             }
             else if(game->gameMap[i][j] == 1){
                 brush.setColor(Qt::black);
                 painter.setBrush(brush);
                 painter.drawEllipse(boardMargin + blockSize * j - radius, menuSize +boardMargin + blockSize * i - radius, radius * 2, radius * 2);
             }
+            //标记最近下的子
+            if(i == clickPosRow && j == clickPosCol){
+                brush.setColor(Qt::red);
+                painter.setBrush(brush);
+                painter.drawEllipse(boardMargin + blockSize * j - smallRadius, menuSize + boardMargin + blockSize * i - smallRadius, smallRadius * 2, smallRadius * 2);
+            }
         }
     }
 
-    if(clickPosRow > 0 && clickPosRow < boardSize
-            && clickPosCol && clickPosCol < boardSize
-            && (game->gameMap[clickPosRow][clickPosCol] == 1 || game->gameMap[clickPosRow][clickPosCol] == -1)){
+    if(clickPosRow >= 0 && clickPosRow < boardSize
+            && clickPosCol >= 0 && clickPosCol < boardSize
+            && (game->gameMap[clickPosRow][clickPosCol] == 1 || game->gameMap[clickPosRow][clickPosCol] == 0)){
         if(game->isWin(clickPosRow, clickPosCol) && game->gameStatus == PLAYING){
             qDebug() << "win";
             game->gameStatus = WIN;
@@ -172,7 +207,8 @@ void MainWindow::restart(int first)
 {
     this->setFirstPlayer(first);
     turn = 1;
-    game->startGame(first);
+    init();
+    startTimer();
 }
 
 MainWindow::~MainWindow()
@@ -191,16 +227,22 @@ void MainWindow::init()
     game->gameStatus = PLAYING;
     game->startGame(firstPlayer);
     update();
+    if(game->player1.getTurn() == turn){
+        ui->playerLabel->setText(tr("玩家一落子"));
+    }
+    else{
+        ui->playerLabel->setText(tr("玩家二落子"));
+    }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     int x = event->x();
     int y = event->y();
-    qDebug()<< event->pos();
+    //qDebug()<< event->pos();
 
-    if(x >= boardMargin && x < windowWidth - boardMargin
-            && y >= menuSize + boardMargin && y < windowHeight - boardMargin){
+    if(x >= boardMargin - posDelta && x < windowWidth - boardMargin + posDelta
+            && y >= menuSize + boardMargin - posDelta && y < windowHeight - boardMargin + posDelta){
         int col = (x - boardMargin) / blockSize;
         int row = (y - boardMargin - menuSize) / blockSize;
         //最近的左上角的点
@@ -239,6 +281,30 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     if(game->gameMap[clickPosRow][clickPosCol] == -1){
         game->gameMap[clickPosRow][clickPosCol] = turn;
         turn = !(turn);
+        //qDebug() << turn;
+        //qDebug() << game->player1.getTurn();
+        //qDebug() << game->player2.getTurn();
+        if(turn == game->player1.getTurn()){
+            ui->playerLabel->setText(tr("玩家一落子"));
+        }
+        else{
+            ui->playerLabel->setText(tr("玩家二落子"));
+        }
+        down->start(30000);
+        count->start(1000);
+        clear->start(31000);
+        time = 30;
+        QString s = QString::number(time--, 10);
+        ui->lcdNumber->display(s);
+
+    }
+    else{
+        //提醒用户不能重复下子
+
+
+
+
+
     }
 
     update();

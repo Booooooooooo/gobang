@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <game.h>
 #include <QMouseEvent>
+#include <QTimer>
 
 namespace Ui {
 class MainWindow;
@@ -18,6 +19,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void setFirstPlayer(int first);
+    void startTimer();
 protected:
     void paintEvent(QPaintEvent *);
     void mousePressEvent(QMouseEvent *event);
@@ -29,9 +31,12 @@ private:
     int clickPosRow, clickPosCol;
     void initGame();
     void checkGame(int y, int x);
-    int turn;//0为黑子走，1为白子走
+    bool turn;//0为黑子走，1为白子走
     int firstPlayer;
     void restart(int first);
+    QTimer* down;
+    QTimer* clear;
+    QTimer* count;
 private slots:
     void countTime();
     void countDown();

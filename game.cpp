@@ -44,41 +44,45 @@ bool Game::isWin(int row, int col)
     //水平
     for(int i = 0; i < 5; i++){
         //向左i个开始
-        if(col - i > 0 && col - i + 4 < boardSize
+        if(col - i >= 0 && col - i + 4 < boardSize
                 && gameMap[row][col - i] == gameMap[row][col - i + 1]
                 && gameMap[row][col - i] == gameMap[row][col - i + 2]
                 && gameMap[row][col - i] == gameMap[row][col - i + 3]
-                && gameMap[row][col - i] == gameMap[row][col - i + 4])
+                && gameMap[row][col - i] == gameMap[row][col - i + 4]
+                && gameMap[row][col - i] != -1)
             return true;
     }
 
     //竖直
     for(int i = 0; i < 5; i++){
-        if(row - i > 0 && row - i + 4 < boardSize
+        if(row - i >= 0 && row - i + 4 < boardSize
                 && gameMap[row - i][col] == gameMap[row - i + 1][col]
                 && gameMap[row - i][col] == gameMap[row - i + 2][col]
                 && gameMap[row - i][col] == gameMap[row - i + 3][col]
-                && gameMap[row - i][col] == gameMap[row - i + 4][col])
+                && gameMap[row - i][col] == gameMap[row - i + 4][col]
+                && gameMap[row - i][col] != -1)
             return true;
     }
 
     //左斜
     for(int i = 0; i < 5; i++){
-        if(row + i < boardSize && row + i - 4 > 0 && col - i + 4 < boardSize
+        if(row + i < boardSize && row + i - 4 >= 0 && col - i + 4 < boardSize
                 && gameMap[row + i][col - i] == gameMap[row + i - 1][col - i + 1]
                 && gameMap[row + i][col - i] == gameMap[row + i - 2][col - i + 2]
                 && gameMap[row + i][col - i] == gameMap[row + i - 3][col - i + 3]
-                && gameMap[row + i][col - i] == gameMap[row + i - 4][col - i + 4])
+                && gameMap[row + i][col - i] == gameMap[row + i - 4][col - i + 4]
+                && gameMap[row + i][col - i] != -1)
             return true;
     }
 
     //右斜
     for(int i = 0; i < 5; i++){
-        if(row - i > 0 && row - i + 4 < boardSize && col - i > 0 && col - i + 4 < boardSize
+        if(row - i >= 0 && row - i + 4 < boardSize && col - i >= 0 && col - i + 4 < boardSize
                 && gameMap[row - i][col - i] == gameMap[row - i + 1][col - i + 1]
                 && gameMap[row - i][col - i] == gameMap[row - i + 2][col - i + 2]
                 && gameMap[row - i][col - i] == gameMap[row - i + 3][col - i + 3]
-                && gameMap[row - i][col - i] == gameMap[row - i + 4][col - i + 4])
+                && gameMap[row - i][col - i] == gameMap[row - i + 4][col - i + 4]
+                && gameMap[row - i][col - i] != -1)
             return true;
     }
 

@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
     if(wel.exec() == QDialog::Accepted){
         if(rol.exec() == QDialog::Accepted){
             w.setFirstPlayer(rol.getFirst());
+            w.startTimer();
             w.show();
             return a.exec();
         }
