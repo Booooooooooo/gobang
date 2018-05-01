@@ -13,8 +13,8 @@ rollDice::rollDice(QWidget *parent) :
     rollingFlag = false;
     k = 0;
 
-    bgfile = "e:/code/qt/gobang/image/1.jpg";
-    bgMovie = new QMovie("e:/code/qt/gobang/image/dice.gif");
+    bgfile = "../gobang/image/1.jpg";
+    bgMovie = new QMovie("../gobang/image/dice.gif");
     diceLabel = new QLabel;
     diceLabel->setGeometry(0,0,100,100);
     diceLabel->setAutoFillBackground(true);
@@ -79,12 +79,12 @@ void rollDice::roll()
         int temp = qrand() % 6 + 1;
         //bool isWhite;
         switch(temp){
-        case 1: bgfile = "e:/code/qt/gobang/image/1.jpg";break;
-        case 2: bgfile = "e:/code/qt/gobang/image/2.jpg";break;
-        case 3: bgfile = "e:/code/qt/gobang/image/3.jpg";break;
-        case 4: bgfile = "e:/code/qt/gobang/image/4.jpg";break;
-        case 5: bgfile = "e:/code/qt/gobang/image/5.jpg";break;
-        case 6: bgfile = "e:/code/qt/gobang/image/6.jpg";break;
+        case 1: bgfile = "../gobang/image/1.jpg";break;
+        case 2: bgfile = "../gobang/image/2.jpg";break;
+        case 3: bgfile = "../gobang/image/3.jpg";break;
+        case 4: bgfile = "../gobang/image/4.jpg";break;
+        case 5: bgfile = "../gobang/image/5.jpg";break;
+        case 6: bgfile = "../gobang/image/6.jpg";break;
         }
 
         if(k == 0){

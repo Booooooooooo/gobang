@@ -13,6 +13,8 @@
 #include <QCloseEvent>
 #include <QMessageBox>
 #include <cmath>
+#include <QSound>
+
 
 const int menuSize = 24;//菜单栏宽度
 const int boardMargin = 30;//棋盘边缘
@@ -45,21 +47,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->timeLabel->setGeometry(boardMargin + 10 * blockSize,boardSize * blockSize + boardMargin * 2, windowWidth / 4, displaySize);
     turn = 1;
     initGame();
+    down = new QTimer(this);
+    connect(down, SIGNAL(timeout()), this, SLOT(countDown()));
+    clear = new QTimer(this);
+    connect(clear, SIGNAL(timeout()), this, SLOT(updateLabel()));
+    count = new QTimer(this);
+    connect(count, SIGNAL(timeout()), this, SLOT(countTime()));
 }
 
 void MainWindow::startTimer()
 {
-    down = new QTimer(this);
-    connect(down, SIGNAL(timeout()), this, SLOT(countDown()));
     down->start(30000);
-
-
-    clear = new QTimer(this);
-    connect(clear, SIGNAL(timeout()), this, SLOT(updateLabel()));
     clear->start(31000);
-
-    count = new QTimer(this);
-    connect(count, SIGNAL(timeout()), this, SLOT(countTime()));
     count->start(1000);
 
     time = 30;
@@ -72,6 +71,7 @@ void MainWindow::countDown()
 {
     ui->timeLabel->setText(tr("超时！"));
     time = 30;
+    QSound::play("../gobang/sound/timeout.wav");
     //超时随机落子
     while(1)
     {
@@ -153,22 +153,32 @@ void MainWindow::paintEvent(QPaintEvent *)
         }
     }
 
-    if(clickPosRow >= 0 && clickPosRow < boardSize
-            && clickPosCol >= 0 && clickPosCol < boardSize
+    if(clickPosRow >= 0 && clickPosRow <= boardSize
+            && clickPosCol >= 0 && clickPosCol <= boardSize
             && (game->gameMap[clickPosRow][clickPosCol] == 1 || game->gameMap[clickPosRow][clickPosCol] == 0)){
         if(game->isWin(clickPosRow, clickPosCol) && game->gameStatus == PLAYING){
             qDebug() << "win";
             game->gameStatus = WIN;
             //音效
-            //QSound::play(WIN_SOUND);
+            QSound::play("../gobang/sound/win.wav");
             QString str;
             if(game->gameMap[clickPosRow][clickPosCol] == 0){
-                str = "white player";
+                if(game->player1.getTurn() == false){
+                    str = "玩家一";
+                }
+                else{
+                    str = "玩家二";
+                }
             }
             else if(game->gameMap[clickPosRow][clickPosCol] == 1){
-                str = "black player";
+                if(game->player1.getTurn() == true){
+                    str = "玩家一";
+                }
+                else{
+                    str = "玩家二";
+                }
             }
-            QMessageBox::StandardButton btnValue = QMessageBox::information(this, "congratulations", str + "win!");
+            QMessageBox::StandardButton btnValue = QMessageBox::information(this, "祝贺", str + "获胜！");
 
             //游戏重置
             if(btnValue == QMessageBox::Ok){
@@ -187,6 +197,7 @@ void MainWindow::paintEvent(QPaintEvent *)
     }
 
     if(game->isDeadGame()){
+        QSound::play("../gobang/sound/lose.wav");
         QMessageBox::StandardButton btnValue = QMessageBox::information(this, "oops", "dead game!");
         if(btnValue == QMessageBox::Ok){
             this->close();
@@ -207,6 +218,8 @@ void MainWindow::restart(int first)
 {
     this->setFirstPlayer(first);
     turn = 1;
+    clickPosCol = -1;
+    clickPosRow = -1;
     init();
     startTimer();
 }
@@ -290,21 +303,11 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         else{
             ui->playerLabel->setText(tr("玩家二落子"));
         }
-        down->start(30000);
-        count->start(1000);
-        clear->start(31000);
-        time = 30;
-        QString s = QString::number(time--, 10);
-        ui->lcdNumber->display(s);
-
+        startTimer();
     }
     else{
         //提醒用户不能重复下子
-
-
-
-
-
+        QSound::play("../gobang/sound/error.wav");
     }
 
     update();
