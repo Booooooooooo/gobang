@@ -1,5 +1,6 @@
 #include "game.h"
 #include <QTime>
+#include <QDebug>
 
 Game::Game()
 {
@@ -23,19 +24,27 @@ bool Game::startGame(int firstPlayer)
         gameMap.push_back(lineBoard);
     }
 
-    playerFlag = firstPlayer % 2;
-    if(player1.getID() == firstPlayer){
-        player1.setTurn(0);
-        player2.setTurn(1);
-        player1.setColor(0);
-        player2.setColor(1);
+    if(firstPlayer == 1){
+        player1.setTurn(1);
+        player2.setTurn(0);
     }
     else{
-        player2.setTurn(0);
-        player2.setColor(0);
-        player1.setTurn(1);
-        player1.setColor(1);
+        player1.setTurn(0);
+        player2.setTurn(1);
     }
+    /*playerFlag = firstPlayer % 2;
+    if(player1.getID() == playerFlag){
+        player1.setTurn(1);
+        player2.setTurn(0);
+        player1.setColor(1);
+        player2.setColor(0);
+    }
+    else{
+        player2.setTurn(1);
+        player2.setColor(1);
+        player1.setTurn(0);
+        player1.setColor(0);
+    }*/
 
     if(gameType == 1){
         scoreMap.clear();
@@ -49,7 +58,7 @@ bool Game::startGame(int firstPlayer)
     }
 }
 
-void Game::actionByAI(int &clickRow, int &clickCol)
+void Game::actionByAI(int clickRow, int clickCol)
 {
     calculateScore();
 
@@ -76,6 +85,7 @@ void Game::actionByAI(int &clickRow, int &clickCol)
     clickRow = pointPair.first;
     clickCol = pointPair.second;
     gameMap[clickRow][clickCol] = player2.getTurn();
+    //qDebug()<<player2.getTurn();
 }
 
 void Game::calculateScore()

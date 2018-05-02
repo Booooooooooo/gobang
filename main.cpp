@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
     if(wel.exec() == QDialog::Accepted){
         //if(rol.exec() == QDialog::Accepted){
         w.restart(wel.firstPlayer, wel.type);
+        //qDebug()<<wel.firstPlayer;
         w.show();
             return a.exec();
         //}

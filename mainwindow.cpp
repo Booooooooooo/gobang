@@ -267,11 +267,13 @@ void MainWindow::init()
         qsrand(QDateTime::currentDateTime().toTime_t());
         clickPosCol = qrand() % boardSize;
         clickPosRow = qrand() % boardSize;
-        game->gameMap[clickPosRow][clickPosCol] = 0;
+        game->gameMap[clickPosRow][clickPosCol] = !turn;
+        //qDebug() << game->player2.getTurn();
         game->actionByAI(clickPosRow, clickPosCol);
         game->gameMap[clickPosRow][clickPosCol] = -1;
         clickPosCol = -1;
         clickPosRow = -1;
+        turn = !turn;
     }
 
     if(game->player1.getTurn() == turn){
