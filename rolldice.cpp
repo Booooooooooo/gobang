@@ -54,10 +54,11 @@ rollDice::~rollDice()
     delete ui;
 }
 
-int rollDice::getFirst()
+/*int rollDice::getFirst()
 {
+    //qDebug() <<"roll"<<firstPlayer;
     return firstPlayer;
-}
+}*/
 
 int rollDice::getType()
 {
@@ -71,7 +72,7 @@ void rollDice::roll()
         rollButton->setText("Stop");
         QSound::play("../gobang/sound/roll.wav");
         diceLabel->setMovie(bgMovie);
-        qDebug() << type;
+        //qDebug() << "roll"<<type;
         if(k == 0){
             beginButton->setVisible(false);
             if(type == 0){
@@ -123,6 +124,7 @@ void rollDice::roll()
             }
 
             firstPlayer = 2;
+            //qDebug() <<"roll" <<firstPlayer;
             beginButton->setVisible(true);
             k = 0;
         }

@@ -34,4 +34,6 @@ RESOURCES += \
     dice.qrc \
     icon.qrc
 
-DISTFILES +=
+DISTFILES += \
+    app.rc
+RC_FILE = app.rc

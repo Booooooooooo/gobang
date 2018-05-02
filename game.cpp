@@ -159,7 +159,7 @@ void Game::calculateScore()
                             for(int i = 1; i <= 4; i++){
                                 if(row + i * y >= 0 && row + i * y <= boardSize
                                         && col + i * x >= 0 && col + i * x <= boardSize
-                                        && gameMap[row + i * y][col + i * x] == player1.getTurn()){
+                                        && gameMap[row + i * y][col + i * x] == player2.getTurn()){
                                     comNum++;
                                 }
                                 else if(row + i * y >= 0 && row + i * y <= boardSize

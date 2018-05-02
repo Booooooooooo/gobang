@@ -21,6 +21,7 @@ public:
     void setFirstPlayer(int first);
     void startTimer();
     void setGameType(int type);
+    void restart(int first, int t);
 protected:
     void paintEvent(QPaintEvent *);
     void mousePressEvent(QMouseEvent *event);
@@ -35,7 +36,7 @@ private:
     void checkGame(int y, int x);
     int turn;//0为黑子走，1为白子走
     int firstPlayer;
-    void restart(int first, int t);
+
     QTimer* down;
     QTimer* clear;
     QTimer* count;

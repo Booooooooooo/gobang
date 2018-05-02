@@ -26,6 +26,7 @@ void welcome::person()
     roll.setType(type);
     if(roll.exec() == QDialog::Accepted){
         QDialog::accept();
+        firstPlayer = roll.firstPlayer;
     }
     else{
         QDialog::reject();
@@ -41,6 +42,7 @@ void welcome::computer()
     roll.setType(type);
     if(roll.exec() == QDialog::Accepted){
         QDialog::accept();
+        firstPlayer = roll.firstPlayer;
     }
     else{
         QDialog::reject();

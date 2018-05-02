@@ -2,6 +2,7 @@
 #include "welcome.h"
 #include "rolldice.h"
 #include <QApplication>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -14,10 +15,8 @@ int main(int argc, char *argv[])
     int flag = -1;
     if(wel.exec() == QDialog::Accepted){
         //if(rol.exec() == QDialog::Accepted){
-            w.setFirstPlayer(rol.getFirst());
-            w.setGameType(wel.type);
-            w.startTimer();
-            w.show();
+        w.restart(wel.firstPlayer, wel.type);
+        w.show();
             return a.exec();
         //}
 

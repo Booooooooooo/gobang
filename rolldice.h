@@ -20,7 +20,8 @@ class rollDice : public QDialog
 public:
     explicit rollDice(QWidget *parent = 0);
     ~rollDice();
-    int getFirst();
+    int firstPlayer;
+    //int getFirst();
     void setType(int type);
     int getType();
 
@@ -36,7 +37,7 @@ private:
     QLabel *resultLabel;
     QVBoxLayout *layout;
     int k;
-    int firstPlayer;
+
 private slots:
     void roll();
 };

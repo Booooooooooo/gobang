@@ -16,6 +16,7 @@ public:
     explicit welcome(QWidget *parent = 0);
     ~welcome();
     int type;//0为双人，1为人机
+    int firstPlayer;
 
 private slots:
     void person();

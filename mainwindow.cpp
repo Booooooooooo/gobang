@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->playerLabel->setGeometry(boardMargin, menuSize + boardSize * blockSize + boardMargin * 2, windowWidth / 4, displaySize);
     ui->playerLabel->setFont(QFont("Timers", 12, QFont::Bold));
     ui->timeLabel->setParent(this);
-    ui->timeLabel->setFont(QFont("TImers", 12, QFont::Bold));
+    ui->timeLabel->setFont(QFont("Timers", 12, QFont::Bold));
     ui->timeLabel->setGeometry(boardMargin + 10 * blockSize,boardSize * blockSize + boardMargin * 2, windowWidth / 4, displaySize);
     turn = 1;
     initGame();
@@ -164,26 +164,45 @@ void MainWindow::paintEvent(QPaintEvent *)
         if(game->isWin(clickPosRow, clickPosCol) && game->gameStatus == PLAYING){
             qDebug() << "win";
             game->gameStatus = WIN;
-            //音效
-            QSound::play("../gobang/sound/win.wav");
+
             QString str;
             if(game->gameMap[clickPosRow][clickPosCol] == 0){
-                if(game->player1.getTurn() == false){
+                if(game->player1.getTurn() == 0){
                     str = "玩家一";
+                    if(type == 1) str = "玩家";
                 }
                 else{
                     str = "玩家二";
+                    if(type == 1) str = "电脑";
                 }
             }
             else if(game->gameMap[clickPosRow][clickPosCol] == 1){
-                if(game->player1.getTurn() == true){
+                if(game->player1.getTurn() == 1){
                     str = "玩家一";
+                    if(type == 1) str = "玩家";
                 }
                 else{
                     str = "玩家二";
+                    if(type == 1) str = "电脑";
                 }
             }
-            QMessageBox::StandardButton btnValue = QMessageBox::information(this, "祝贺", str + "获胜！");
+            QMessageBox::StandardButton btnValue;
+            if(type == 1 && str == "电脑"){
+                //音效
+                QSound::play("../gobang/sound/lose.wav");
+                btnValue = QMessageBox::information(this, "啊哦", "您输了");
+            }
+            else if(type == 1 && str == "玩家"){
+                //音效
+                QSound::play("../gobang/sound/win.wav");
+                btnValue = QMessageBox::information(this, "祝贺", "您获胜了！");
+            }
+            else{
+                //音效
+                QSound::play("../gobang/sound/win.wav");
+                btnValue = QMessageBox::information(this, "祝贺", str + "获胜！");
+            }
+
 
             //游戏重置
             if(btnValue == QMessageBox::Ok){
@@ -192,10 +211,8 @@ void MainWindow::paintEvent(QPaintEvent *)
                 rollDice roll;
                 //MainWindow w;
                 if(wel.exec() == QDialog::Accepted){
-                    if(roll.exec() == QDialog::Accepted){
-                        restart(roll.getFirst(), roll.getType());
-                        this->show();
-                    }
+                    restart(wel.firstPlayer, wel.type);
+                    this->show();
                 }
             }
         }
@@ -210,10 +227,8 @@ void MainWindow::paintEvent(QPaintEvent *)
             rollDice roll;
             MainWindow w;
             if(wel.exec() == QDialog::Accepted){
-                if(roll.exec() == QDialog::Accepted){
-                    restart(roll.getFirst(), roll.getType());
-                    this->show();
-                }
+                restart(wel.firstPlayer, wel.type);
+                this->show();
             }
         }
     }
@@ -222,7 +237,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 void MainWindow::restart(int first, int t)
 {
     this->setFirstPlayer(first);
-    setGameType(type);
+    setGameType(t);
     turn = 1;
     clickPosCol = -1;
     clickPosRow = -1;
@@ -245,7 +260,9 @@ void MainWindow::init()
 {
     game->gameStatus = PLAYING;
     game->gameType = type;
+    //qDebug() << type;
     game->startGame(firstPlayer);
+    //qDebug() <<firstPlayer;
     if(firstPlayer == 2 && type == 1){
         qsrand(QDateTime::currentDateTime().toTime_t());
         clickPosCol = qrand() % boardSize;
@@ -253,8 +270,10 @@ void MainWindow::init()
         game->gameMap[clickPosRow][clickPosCol] = 0;
         game->actionByAI(clickPosRow, clickPosCol);
         game->gameMap[clickPosRow][clickPosCol] = -1;
+        clickPosCol = -1;
+        clickPosRow = -1;
     }
-    update();
+
     if(game->player1.getTurn() == turn){
         if(type == 0)
             ui->playerLabel->setText(tr("玩家一落子"));
@@ -262,8 +281,13 @@ void MainWindow::init()
             ui->playerLabel->setText(tr("玩家落子"));
     }
     else{
-        ui->playerLabel->setText(tr("玩家二落子"));
+        if(type == 0)
+            ui->playerLabel->setText(tr("玩家二落子"));
+        else
+            ui->playerLabel->setText(tr("电脑落子"));
+
     }
+    update();
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -316,15 +340,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         //qDebug() << turn;
         //qDebug() << game->player1.getTurn();
         //qDebug() << game->player2.getTurn();
-        if(turn == game->player1.getTurn()){
-            if(type == 0)
-                ui->playerLabel->setText(tr("玩家一落子"));
-            else
-                ui->playerLabel->setText(tr("玩家落子"));
-        }
-        else{
-            ui->playerLabel->setText(tr("玩家二落子"));
-        }
+
         startTimer();
     }
     else{
@@ -343,8 +359,18 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *)
         turn = !turn;
         game->actionByAI(clickPosRow, clickPosCol);
         QSound::play("../gobang/sound/play.wav");
+        ui->playerLabel->setText(tr("玩家落子"));
         update();
         startTimer();
+    }
+    else{
+        if(turn == game->player1.getTurn()){
+            ui->playerLabel->setText(tr("玩家一落子"));
+
+        }
+        else{
+            ui->playerLabel->setText(tr("玩家二落子"));
+        }
     }
 }
 
@@ -357,7 +383,7 @@ void MainWindow::on_actionNew_triggered()
     //MainWindow w;
     if(wel.exec() == QDialog::Accepted){
         //if(roll.exec() == QDialog::Accepted){
-            restart(roll.getFirst(), roll.getType());
+            restart(wel.firstPlayer, wel.type);
             this->show();
         //}
     }
