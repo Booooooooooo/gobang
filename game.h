@@ -31,7 +31,7 @@ public:
     vector < vector<int> > gameMap;//棋盘和棋子的情况，空白为-1，白子0，黑子1
     vector < vector<int> > scoreMap;//ai各点评分
     void calculateScore();
-    void actionByAI(int clickRow, int clickCol);
+    void actionByAI(int &clickRow, int &clickCol);
     GameStatus gameStatus;
     int gameType;//0为双人，1为人机
 

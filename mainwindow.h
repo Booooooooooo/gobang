@@ -36,6 +36,7 @@ private:
     void checkGame(int y, int x);
     int turn;//0为黑子走，1为白子走
     int firstPlayer;
+    bool clickError;
 
     QTimer* down;
     QTimer* clear;

@@ -58,7 +58,7 @@ bool Game::startGame(int firstPlayer)
     }
 }
 
-void Game::actionByAI(int clickRow, int clickCol)
+void Game::actionByAI(int &clickRow, int &clickCol)
 {
     calculateScore();
 

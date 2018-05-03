@@ -92,7 +92,14 @@ void MainWindow::countDown()
                 ui->playerLabel->setText(tr("玩家一落子"));
             }
             else{
-                ui->playerLabel->setText(tr("玩家二落子"));
+                if(type == 1){
+                    //ui->playerLabel->setText(tr("电脑落子"));
+                    game->actionByAI(clickPosRow, clickPosCol);
+                }
+                else{
+                    ui->playerLabel->setText(tr("玩家二落子"));
+                }
+
             }
             update();
             break;
@@ -160,7 +167,8 @@ void MainWindow::paintEvent(QPaintEvent *)
 
     if(clickPosRow >= 0 && clickPosRow <= boardSize
             && clickPosCol >= 0 && clickPosCol <= boardSize
-            && (game->gameMap[clickPosRow][clickPosCol] == 1 || game->gameMap[clickPosRow][clickPosCol] == 0)){
+            &&game -> gameMap[clickPosRow][clickPosCol] != -1){
+        //qDebug() << game->isWin(clickPosRow, clickPosCol);
         if(game->isWin(clickPosRow, clickPosCol) && game->gameStatus == PLAYING){
             qDebug() << "win";
             game->gameStatus = WIN;
@@ -206,6 +214,9 @@ void MainWindow::paintEvent(QPaintEvent *)
 
             //游戏重置
             if(btnValue == QMessageBox::Ok){
+                count->stop();
+                down->stop();
+                clear->stop();
                 this->close();
                 welcome wel;
                 rollDice roll;
@@ -222,6 +233,9 @@ void MainWindow::paintEvent(QPaintEvent *)
         QSound::play("../gobang/sound/lose.wav");
         QMessageBox::StandardButton btnValue = QMessageBox::information(this, "啊哦", "死局");
         if(btnValue == QMessageBox::Ok){
+            count->stop();
+            down->stop();
+            clear->stop();
             this->close();
             welcome wel;
             rollDice roll;
@@ -269,10 +283,11 @@ void MainWindow::init()
         clickPosRow = qrand() % boardSize;
         game->gameMap[clickPosRow][clickPosCol] = !turn;
         //qDebug() << game->player2.getTurn();
+        int tRow = clickPosRow, tCol = clickPosCol;
         game->actionByAI(clickPosRow, clickPosCol);
-        game->gameMap[clickPosRow][clickPosCol] = -1;
-        clickPosCol = -1;
-        clickPosRow = -1;
+        game->gameMap[tRow][tCol] = -1;
+        //clickPosCol = -1;
+        //clickPosRow = -1;
         turn = !turn;
     }
 
@@ -344,10 +359,12 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         //qDebug() << game->player2.getTurn();
 
         startTimer();
+        clickError = false;
     }
     else{
         //提醒用户不能重复下子
         QSound::play("../gobang/sound/error.wav");
+        clickError = true;
     }
 
     update();
@@ -355,30 +372,39 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *)
 {
-    if(type == 1){
-        //qDebug()<<clickPosRow;
-        //qDebug()<<clickPosCol;
-        turn = !turn;
-        game->actionByAI(clickPosRow, clickPosCol);
-        QSound::play("../gobang/sound/play.wav");
-        ui->playerLabel->setText(tr("玩家落子"));
-        update();
-        startTimer();
-    }
-    else{
-        if(turn == game->player1.getTurn()){
-            ui->playerLabel->setText(tr("玩家一落子"));
-
+    if(!clickError){
+        if(type == 1){
+            //qDebug()<<clickPosRow;
+            //qDebug()<<clickPosCol;
+            turn = !turn;
+            game->actionByAI(clickPosRow, clickPosCol);
+            QSound::play("../gobang/sound/play.wav");
+            ui->playerLabel->setText(tr("玩家落子"));
+            update();
+            startTimer();
         }
         else{
-            ui->playerLabel->setText(tr("玩家二落子"));
+            if(turn == game->player1.getTurn()){
+                ui->playerLabel->setText(tr("玩家一落子"));
+
+            }
+            else{
+                ui->playerLabel->setText(tr("玩家二落子"));
+            }
         }
     }
+    else{
+        clickError = false;
+    }
+
 }
 
 
 void MainWindow::on_actionNew_triggered()
 {
+    count->stop();
+    down->stop();
+    clear->stop();
     this->close();
     welcome wel;
     rollDice roll;
