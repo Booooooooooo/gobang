@@ -1,6 +1,8 @@
 #include "game.h"
 #include <QTime>
 #include <QDebug>
+#include <QTime>
+#include <QApplication>
 
 Game::Game()
 {
@@ -86,6 +88,15 @@ void Game::actionByAI(int &clickRow, int &clickCol)
     clickCol = pointPair.second;
     gameMap[clickRow][clickCol] = player2.getTurn();
     //qDebug()<<player2.getTurn();
+    sleep(500);
+}
+
+void Game::sleep(unsigned int msec)
+{
+     QTime reachTime = QTime::currentTime().addMSecs(msec);
+     while(QTime::currentTime() < reachTime){
+         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+     }
 }
 
 void Game::calculateScore()

@@ -279,8 +279,8 @@ void MainWindow::init()
     //qDebug() <<firstPlayer;
     if(firstPlayer == 2 && type == 1){
         qsrand(QDateTime::currentDateTime().toTime_t());
-        clickPosCol = qrand() % boardSize;
-        clickPosRow = qrand() % boardSize;
+        clickPosCol = qrand() % (boardSize - 10) + 4;
+        clickPosRow = qrand() % (boardSize - 10) + 4;
         game->gameMap[clickPosRow][clickPosCol] = !turn;
         //qDebug() << game->player2.getTurn();
         int tRow = clickPosRow, tCol = clickPosCol;

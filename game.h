@@ -36,6 +36,7 @@ public:
     int gameType;//0为双人，1为人机
 
 private:
+    void sleep(unsigned int msec);
     int playerFlag;
 };
 
